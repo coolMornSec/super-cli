@@ -1,0 +1,32 @@
+schema: spec-driven
+
+context: |
+  仓库定位：本仓库是以 OpenSpec 为正式规格底座、以 Superpowers 与仓库治理规则为执行约束的 AI 生成脚手架。
+  正式规格入口：仅允许使用 openspec/changes/<change-id>/ 与 openspec/specs/ 作为正式规格写入目标。
+  目录职责：
+  - openspec/changes/<change-id>/：当前 change 的 proposal、design、tasks 与 specs。
+  - openspec/specs/：归档后的长期 capability specs。
+  - docs/superpowers/plans/、docs/superpowers/reviews/、docs/superpowers/visuals/：执行证据层，不得替代正式规格。
+  文档语言：除非用户明确要求，正式文档默认使用中文，并避免出现乱码。
+  产物职责：
+  - proposal 说明为什么做、范围是什么、哪些内容不在范围内。
+  - design 说明技术方案、边界处理、风险与迁移影响。
+  - tasks 说明可执行任务、依赖顺序与验收导向。
+  - spec 只定义必须满足的行为要求与场景。
+  稳定性优先：
+  - 首版配置优先减少路径误用、语言漂移和规格/执行职责混淆。
+  - 更细的阶段门禁、角色协议与公司规范仍以 AGENTS.md 和仓库 skills 为准，不在本文件一次性写满。
+
+rules:
+  proposal:
+    - 使用 Why / What Changes / Capabilities / Impact 的结构。
+    - 明确目标变化、范围边界与非目标，不在 proposal 中写实现细节。
+  design:
+    - 使用 Context / Goals / Non-Goals / Decisions / Risks / Migration Plan / Open Questions 的结构。
+    - 说明边界、风险、兼容性或迁移影响，不让 design 缺少用户可见行为变化。
+  tasks:
+    - 使用可勾选任务项，并按里程碑或阶段分组。
+    - 任务应可跟踪、可验证，并能映射到规格要求或后续验证动作。
+  spec:
+    - 使用 Requirement / Scenario 描述行为要求，聚焦必须发生什么。
+    - 不要把实现方案、脚本命令或临时执行步骤写成长期行为规格。

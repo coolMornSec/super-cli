@@ -1,0 +1,7 @@
+/**
+ * 其他组件库样式，放在 components 层
+ */
+// @import '@magustek/framework-ui/dist/style.css' layer(components);
+.el-form--inline .el-select {
+  width: 220px;
+}

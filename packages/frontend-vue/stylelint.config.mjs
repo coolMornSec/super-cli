@@ -1,0 +1,126 @@
+import { defineConfig } from 'stylelint-define-config'
+
+export default defineConfig({
+  cache: false,
+
+  defaultSeverity: 'warning',
+  plugins: ['stylelint-order', 'stylelint-prettier', 'stylelint-scss'],
+
+  extends: [
+    'stylelint-config-recommended-scss',
+    'stylelint-config-html',
+    'stylelint-config-recommended-vue',
+    'stylelint-config-recommended-vue/scss',
+    'stylelint-config-prettier-scss',
+  ],
+
+  rules: {
+    'color-no-hex': null,
+    'color-hex-length': 'short',
+    'value-no-vendor-prefix': true,
+    'no-empty-source': null,
+    'block-no-empty': null,
+
+    'scss/at-rule-no-unknown': [true, { ignoreAtRules: ['unocss'] }],
+
+    'order/order': ['custom-properties', 'dollar-variables', 'at-variables', 'declarations', 'at-rules', 'rules'],
+    'order/properties-order': [
+      {
+        groundName: 'Positioning',
+        properties: ['position', 'top', 'right', 'bottom', 'left', 'z-index', 'transform'],
+      },
+      {
+        groupName: 'Dimensions',
+        properties: ['width', 'min-width', 'max-width', 'height', 'min-height', 'max-height', 'overflow'],
+      },
+      {
+        groundName: 'Display & Flow',
+        properties: ['display', 'visibility', 'float', 'clear'],
+      },
+      {
+        groupName: 'Flex',
+        properties: [
+          'flex',
+          'flex-direction',
+          'flex-grow',
+          'flex-shrink',
+          'flex-basis',
+          'flex-wrap',
+          'justify-content',
+          'align-items',
+        ],
+      },
+      {
+        groupName: 'Margins, Padding, Borders, Outline',
+        properties: [
+          'margin',
+          'margin-top',
+          'margin-right',
+          'margin-bottom',
+          'margin-left',
+          'padding',
+          'padding-top',
+          'padding-right',
+          'padding-bottom',
+          'padding-left',
+          'border-radius',
+          'border',
+          'border-top',
+          'border-right',
+          'border-bottom',
+          'border-left',
+          'border-width',
+          'border-top-width',
+          'border-right-width',
+          'border-bottom-width',
+          'border-left-width',
+          'border-style',
+          'border-top-style',
+          'border-right-style',
+          'border-bottom-style',
+          'border-left-style',
+          'border-color',
+          'border-top-color',
+          'border-right-color',
+          'border-bottom-color',
+          'border-left-color',
+          'outline',
+          'list-style',
+          'table-layout',
+          'border-collapse',
+          'border-spacing',
+          'empty-cells',
+        ],
+      },
+      {
+        groundName: 'Typographic Styles',
+        properties: [
+          'font',
+          'font-family',
+          'font-size',
+          'line-height',
+          'font-weight',
+          'text-align',
+          'text-indent',
+          'text-transform',
+          'text-decoration',
+          'letter-spacing',
+          'word-spacing',
+          'white-space',
+          'vertical-align',
+          'color',
+        ],
+      },
+      {
+        groupName: 'Backgrounds',
+        properties: ['background', 'background-color', 'background-image', 'background-repeat', 'background-position'],
+      },
+      {
+        groundName: 'Opacity, Cursors, Generated Content, Transition',
+        properties: ['opacity', 'cursor', 'content', 'quotes', 'transition'],
+      },
+    ],
+
+    'prettier/prettier': true,
+  },
+})

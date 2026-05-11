@@ -1,0 +1,115 @@
+/* src/styles/element/theme.scss */
+@use 'sass:color';
+
+/* 主品牌色 */
+$primary: #30429b;
+
+/* 状态色 */
+$success: #67c23a;
+$warning: #e6a23c;
+$danger: #b7a5a5;
+$info: #909399;
+
+/* 文本色 */
+$text-primary: #303133;
+$text-regular: #606266;
+$text-secondary: #909399;
+$text-placeholder: #a8abb2;
+$text-disabled: #c0c4cc;
+
+/* 边框色 */
+$border-default: #dcdfe6;
+$border-light: #e4e7ed;
+$border-lighter: #ebeef5;
+$border-extra-light: #f2f6fc;
+$border-dark: #d4d7de;
+$border-darker: #cdd0d6;
+
+/* 背景色 */
+$bg-default: #fff;
+$bg-page: #f5f7fa;
+$bg-overlay: #fff;
+
+/* 填充色 */
+$fill-default: #f0f2f5;
+$fill-light: #f5f7fa;
+$fill-lighter: #fafafa;
+$fill-extra-light: #fafcff;
+$fill-dark: #ebedf0;
+$fill-darker: #e6e8eb;
+$fill-blank: #fff;
+
+/* 主色衍生值：与 Element Plus 命名保持一致 */
+$primary-light-3: color.mix(#fff, $primary, 30%);
+$primary-light-5: color.mix(#fff, $primary, 50%);
+$primary-light-7: color.mix(#fff, $primary, 70%);
+$primary-light-8: color.mix(#fff, $primary, 80%);
+$primary-light-9: color.mix(#fff, $primary, 90%);
+$primary-dark-2: color.mix(#000, $primary, 20%);
+
+$danger-light-3: color.mix(#fff, $danger, 30%);
+$danger-light-5: color.mix(#fff, $danger, 50%);
+$danger-light-7: color.mix(#fff, $danger, 70%);
+$danger-light-8: color.mix(#fff, $danger, 80%);
+$danger-light-9: color.mix(#fff, $danger, 90%);
+$danger-dark-2: color.mix(#000, $danger, 20%);
+
+/* 额外导出一层 CSS Variables，供业务样式和封装组件统一使用 */
+:root {
+  /* 显式覆盖 Element Plus 关键 CSS 变量，方便业务侧直接消费 */
+  --el-color-primary: #{$primary};
+  --el-color-primary-light-3: #{$primary-light-3};
+  --el-color-primary-light-5: #{$primary-light-5};
+  --el-color-primary-light-7: #{$primary-light-7};
+  --el-color-primary-light-8: #{$primary-light-8};
+  --el-color-primary-light-9: #{$primary-light-9};
+  --el-color-primary-dark-2: #{$primary-dark-2};
+
+  --el-color-success: #{$success};
+  --el-color-warning: #{$warning};
+  --el-color-danger: #{$danger};
+  --el-color-danger-light-3: #{$danger-light-3};
+  --el-color-danger-light-5: #{$danger-light-5};
+  --el-color-danger-light-7: #{$danger-light-7};
+  --el-color-danger-light-8: #{$danger-light-8};
+  --el-color-danger-light-9: #{$danger-light-9};
+  --el-color-danger-dark-2: #{$danger-dark-2};
+
+  --el-color-error: #{$danger};
+  --el-color-info: #{$info};
+
+  --el-text-color-primary: #{$text-primary};
+  --el-text-color-regular: #{$text-regular};
+  --el-text-color-secondary: #{$text-secondary};
+  --el-text-color-placeholder: #{$text-placeholder};
+  --el-text-color-disabled: #{$text-disabled};
+
+  --el-border-color: #{$border-default};
+  --el-border-color-light: #{$border-light};
+  --el-border-color-lighter: #{$border-lighter};
+  --el-border-color-extra-light: #{$border-extra-light};
+  --el-border-color-dark: #{$border-dark};
+  --el-border-color-darker: #{$border-darker};
+
+  --el-bg-color: #{$bg-default};
+  --el-bg-color-page: #{$bg-page};
+  --el-bg-color-overlay: #{$bg-overlay};
+
+  --el-fill-color: #{$fill-default};
+  --el-fill-color-light: #{$fill-light};
+  --el-fill-color-lighter: #{$fill-lighter};
+  --el-fill-color-extra-light: #{$fill-extra-light};
+  --el-fill-color-dark: #{$fill-dark};
+  --el-fill-color-darker: #{$fill-darker};
+  --el-fill-color-blank: #{$fill-blank};
+
+  /* 全局禁用态 */
+  --el-disabled-bg-color: #f4f6fb;
+  --el-disabled-text-color: #9fa8c3;
+  --el-disabled-border-color: #d9dfef;
+
+  /* Button 禁用态 */
+  --el-button-disabled-text-color: #b3bbd3;
+  --el-button-disabled-bg-color: #eef1fa;
+  --el-button-disabled-border-color: #d9dfef;
+}

@@ -1,0 +1,48 @@
+@layer base, components, utilities;
+
+@import '@unocss/reset/tailwind-compat.css' layer(base);
+
+@import url('./components.scss');
+
+@import url(./var.scss);
+
+@layer base {
+  /**
+   * @unocss 预设演示占位符
+   * @see https://unocss.dev/config/preflights
+   */
+  @unocss preflights;
+}
+
+/**
+ * components 层
+ * @unocss 默认占位符，项目中样式（比如 px-2,mx-4 等）会被注入到该层，同时会生成 `*, ::before, ::after {}` 样式重置
+ * 其他组件库的样式也应该被注入到该层，防止组件库的 * 选择器的样式层级提升而覆盖了项目的样式（margin，padding，border 等）
+ */
+@layer components {
+  @unocss default;
+}
+
+@layer utilities {
+  * {
+    /**
+     * @unocss 占位符 * 选择器未设置 border-color，这里重置为 --un-default-border-color，兼容 tailwind-compat
+     */
+    border-color: var(--un-default-border-color);
+  }
+}
+
+html,
+body,
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

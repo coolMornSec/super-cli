@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.magus.cloud</groupId>
+        <artifactId>magus-xxx</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <groupId>com.magus.cloud</groupId>
+    <artifactId>magus-xxx-facade</artifactId>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.magus.cloud</groupId>
+            <artifactId>magus-xxx-base</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.magus.cloud</groupId>
+            <artifactId>magus-xxx-service</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.magus.cloud</groupId>
+            <artifactId>framework-initial</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>${parent.artifactId}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven-compiler-plugin.version}</version>
+                    <inherited>true</inherited>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${maven-springboot-plugin.version}</version>
+                <configuration>
+                    <mainClass>com.magus.cloud.xxx.facade.Application</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

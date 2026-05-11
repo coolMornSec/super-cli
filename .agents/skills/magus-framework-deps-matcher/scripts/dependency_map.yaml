@@ -1,0 +1,315 @@
+# 依赖映射配置
+# 当用户提到某个关键词时，映射到对应的 Framework 依赖
+
+# ============================================================
+# Framework 核心模块
+# ============================================================
+
+redis:
+  keywords:
+    - redis
+    - 缓存
+    - cache
+    - 分布式缓存
+    - 内存数据库
+    - redis缓存
+    - redistemplate
+  dependency: framework-redis
+  description: Redis 缓存支持，提供 RedisTemplate、缓存注解、分布式锁
+  config_example: |
+    framework:
+      redis:
+        host: localhost
+        port: 6379
+        password: 
+        database: 0
+  related_starters:
+    - spring-boot-starter-data-redis
+    - commons-pool2
+
+mq:
+  keywords:
+    - mq
+    - 消息队列
+    - 消息
+    - 发送消息
+    - 消费消息
+    - rabbitmq
+    - kafka
+    - stream
+    - spring cloud stream
+    - 异步消息
+  dependency: framework-mq
+  description: MQ 消息队列支持（Spring Cloud Stream + RabbitMQ）
+  config_example: |
+    spring:
+      cloud:
+        stream:
+          bindings:
+            output:
+              destination: my-queue
+  related_starters:
+    - spring-cloud-stream
+    - spring-cloud-stream-binder-rabbitmq
+
+jpa:
+  keywords:
+    - jpa
+    - hibernate
+    - ORM
+    - 对象关系映射
+    - 数据库访问
+    - 持久层
+    - entity
+    - repository
+    - 分页查询
+  dependency: framework-persistence-jpa
+  description: JPA/Hibernate ORM 支持，包含分页、多数据源
+  config_example: |
+    spring:
+      jpa:
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+  related_starters:
+    - spring-boot-starter-data-jpa
+
+stomp:
+  keywords:
+    - stomp
+    - websocket
+    - ws
+    - 实时通信
+    - 推送
+    - 消息推送
+    - socket
+    - netty-socketio
+  dependency: framework-stomp
+  description: WebSocket/STOMP 实时消息推送支持
+  config_example: |
+    framework:
+      stomp:
+        enabled: true
+  related_starters:
+    - spring-boot-starter-websocket
+    - netty-socketio
+
+openfeign:
+  keywords:
+    - feign
+    - openfeign
+    - 服务调用
+    - http客户端
+    - 远程调用
+    - 微服务调用
+    - 声明式http
+  dependency: framework-openfeign
+  description: OpenFeign HTTP 客户端，支持服务间调用
+  config_example: |
+    spring:
+      cloud:
+        openfeign:
+          client:
+            config:
+              default:
+                connectTimeout: 5000
+  related_starters:
+    - spring-cloud-starter-openfeign
+
+pdf:
+  keywords:
+    - pdf
+    - 导出pdf
+    - pdf生成
+    - 文档导出
+    - itext
+    - freemarker pdf
+  dependency: framework-pdf
+  description: PDF 生成支持（Freemarker + iText）
+  config_example: |
+    framework:
+      pdf:
+        template-path: classpath:templates/pdf/
+  related_starters:
+    - spring-boot-starter-freemarker
+    - itext7-core
+
+grpc:
+  keywords:
+    - grpc
+    - rpc
+    - 远程过程调用
+    - protobuf
+    - 高性能调用
+  dependency: framework-grpc-client
+  description: gRPC 客户端支持，用于高性能服务间通信
+  config_example: |
+    grpc:
+      client:
+        my-service:
+          address: static://localhost:9090
+  related_starters:
+    - grpc-client-spring-boot-starter
+
+rtdb:
+  keywords:
+    - rtdb
+    - openplant
+    - 实时数据库
+    - 时序数据库
+    - 工业数据
+  dependency: framework-rtdb
+  description: OpenPlant RTDB 实时数据库访问支持
+  config_example: |
+    framework:
+      rtdb:
+        enabled: true
+
+initial:
+  keywords:
+    - initial
+    - 初始化
+    - 数据初始化
+    - 脚本初始化
+    - flyway
+    - liquibase
+  dependency: framework-initial
+  description: 应用初始化支持，数据脚本管理
+  config_example: |
+    framework:
+      initial:
+        enabled: true
+
+core:
+  keywords:
+    - core
+    - 基础核心
+    - 通用工具
+    - 基础组件
+    - header context
+    - 上下文
+  dependency: framework-core
+  description: Framework 核心基础组件
+  config_example: |
+    # 自动配置，无需额外配置
+
+common:
+  keywords:
+    - common
+    - 公共包
+    - 工具类
+    - 通用常量
+  dependency: framework-common
+  description: Framework 公共工具包
+  config_example: |
+    # 自动配置，无需额外配置
+
+# ============================================================
+# 第三方库（在 Framework 中已管理）
+# ============================================================
+
+mysql:
+  keywords:
+    - mysql
+    - mysql数据库
+    - 关系型数据库
+    - jdbc mysql
+  dependency: mysql-connector-j
+  description: MySQL 数据库驱动
+  config_example: |
+    spring:
+      datasource:
+        url: jdbc:mysql://localhost:3306/mydb
+        username: root
+        password: secret
+
+postgresql:
+  keywords:
+    - postgresql
+    - postgres
+    - pg
+    - postgresql数据库
+  dependency: postgresql
+  description: PostgreSQL 数据库驱动
+  config_example: |
+    spring:
+      datasource:
+        url: jdbc:postgresql://localhost:5432/mydb
+        username: postgres
+
+lombok:
+  keywords:
+    - lombok
+    - getter setter
+    - 简化代码
+  dependency: lombok
+  description: Lombok 代码简化工具
+  config_example: |
+    # 添加注解处理器即可使用
+
+knife4j:
+  keywords:
+    - knife4j
+    - swagger
+    - api文档
+    - 接口文档
+    - openapi
+    - 在线文档
+  dependency: knife4j-openapi3-jakarta-spring-boot-starter
+  description: API 文档自动生成（Knife4j + OpenAPI3）
+  config_example: |
+    springdoc:
+      api-docs:
+        enabled: true
+      swagger-ui:
+        enabled: true
+
+druid:
+  keywords:
+    - druid
+    - 连接池
+    - 数据库连接池
+    - 监控
+    - 数据源监控
+  dependency: druid-spring-boot-starter
+  description: Druid 数据库连接池和监控
+  config_example: |
+    spring:
+      datasource:
+        druid:
+          initial-size: 5
+          max-active: 20
+
+guava:
+  keywords:
+    - guava
+    - google guava
+    - 缓存
+    - 集合工具
+  dependency: guava
+  description: Google Guava 工具库
+  config_example: |
+    # 直接引入类使用
+
+easyexcel:
+  keywords:
+    - easyexcel
+    - excel
+    - 导入excel
+    - 导出excel
+    - 表格导出
+  dependency: easyexcel
+  description: Alibaba EasyExcel Excel 处理库
+  config_example: |
+    # 直接引入类使用
+
+commons:
+  keywords:
+    - commons-lang3
+    - 字符串工具
+    - 工具类
+    - apache commons
+  dependency: commons-lang3
+  description: Apache Commons Lang 工具库
+  config_example: |
+    # 直接引入类使用

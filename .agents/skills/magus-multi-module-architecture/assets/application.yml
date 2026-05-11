@@ -1,0 +1,69 @@
+spring:
+  # 数据库
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:192.168.2.26}:${MYSQL_PORT:3306}/${MASTER_DATABASE:magus_dev_master}?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASSWORD:magus}
+  jpa:
+    # 显示sql语句
+    show-sql: false
+
+  # redis
+  data:
+    redis:
+      host: ${REDIS_HOST:192.168.2.41}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DB:1}
+      password: ${REDIS_PW:}
+
+seata:
+  tx-service-group: magus_group
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: ${spring.cloud.nacos.discovery.server-addr}
+      namespace: ${SEATA_NAMESPACE:seata}
+      group: ${SEATA_GROUP:SEATA_GROUP} #选择正确的分组
+      username: ${spring.cloud.nacos.discovery.username}
+      password: ${spring.cloud.nacos.discovery.password}
+  config:
+    type: nacos
+    nacos:
+      server-addr: ${spring.cloud.nacos.discovery.server-addr}
+      namespace: ${SEATA_NAMESPACE:seata}
+      group: ${SEATA_GROUP:SEATA_GROUP} #选择正确的分组
+      username: ${spring.cloud.nacos.discovery.username}
+      password: ${spring.cloud.nacos.discovery.password}
+  service:
+    vgroup-mapping:
+      magus_group: default
+
+framework:
+  data-init: true
+  menu-init: true
+  slave-name: magus_dev_slave_
+  vite:
+    app-auth-center-url: http://${AUTH_SERVER_HOST:192.168.2.43:18001}
+  doc-init:
+    endpoint: ${MINIO_HOST:192.168.2.41}
+    port: ${MINIO_PORT:9090}
+    accessKey: ${MINIO_USER:minioadmin}
+    secretKey: ${MINIO_PASSWORD:minioadmin}
+  simple:
+    token:
+      enable: true
+    redirect:
+      enable: true
+
+# 关闭knife4j文档屏蔽
+knife4j:
+  production: false
+
+logging:
+  file.name: /opt/magus/logs/${spring.application.name}/${spring.application.name}.log
+  level.root: info
+
+ollama:
+  url: http://192.168.2.192:11434/api/generate
+  model: deepseek-r1:7b
