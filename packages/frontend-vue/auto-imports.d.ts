@@ -493,6 +493,7 @@ declare global {
   const useToken: typeof import('@magustek/framework-core').useToken
   const useTransition: typeof import('@vueuse/core').useTransition
   const useUrlSearchParams: typeof import('@vueuse/core').useUrlSearchParams
+  const useUserApi: typeof import('./src/api/useUserApi').useUserApi
   const useUserMedia: typeof import('@vueuse/core').useUserMedia
   const useVModel: typeof import('@vueuse/core').useVModel
   const useVModels: typeof import('@vueuse/core').useVModels

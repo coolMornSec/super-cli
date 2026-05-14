@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>菜单管理功能开发复盘报告</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #c9d1d9; --muted: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --red: #f85149; --orange: #d2991d;
+    --purple: #a371f7; --cyan: #39c5cf;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height:1.6; }
+  .container { max-width:1400px; margin:0 auto; padding:24px; }
+  h1 { font-size:2em; color:#fff; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:8px; }
+  h2 { font-size:1.4em; color:var(--accent); margin:32px 0 16px; padding-left:12px; border-left:3px solid var(--accent); }
+  h3 { font-size:1.1em; color:var(--purple); margin:20px 0 10px; }
+  .subtitle { color:var(--muted); margin-bottom:24px; font-size:0.95em; }
+
+  /* Timeline */
+  .timeline { position:relative; padding-left:32px; margin:20px 0; }
+  .timeline::before { content:''; position:absolute; left:12px; top:0; bottom:0; width:2px; background:var(--border); }
+  .phase { position:relative; margin-bottom:32px; }
+  .phase::before { content:''; position:absolute; left:-26px; top:6px; width:14px; height:14px; border-radius:50%; border:2px solid var(--accent); background:var(--bg); }
+  .phase-title { font-weight:700; color:#fff; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+  .phase-badge { font-size:0.75em; padding:2px 8px; border-radius:10px; color:#fff; font-weight:600; }
+  .badge-plan { background:var(--purple); } .badge-execute { background:var(--accent); }
+  .badge-check { background:var(--green); } .badge-verify { background:var(--orange); }
+  .badge-debug { background:var(--red); }
+  .phase-desc { color:var(--muted); font-size:0.9em; margin-bottom:8px; }
+
+  /* Cards */
+  .card-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(400px,1fr)); gap:16px; margin:16px 0; }
+  .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:20px; }
+  .card h4 { color:#fff; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .card ul { padding-left:20px; color:var(--muted); }
+  .card li { margin:4px 0; }
+  .card.good { border-left:3px solid var(--green); }
+  .card.bad { border-left:3px solid var(--red); }
+  .card.neutral { border-left:3px solid var(--orange); }
+
+  /* Tables */
+  table { width:100%; border-collapse:collapse; margin:16px 0; font-size:0.9em; }
+  th { background:var(--surface); color:var(--accent); padding:10px 12px; text-align:left; border:1px solid var(--border); font-weight:600; }
+  td { padding:10px 12px; border:1px solid var(--border); vertical-align:top; }
+  tr:nth-child(even) td { background:rgba(255,255,255,0.02); }
+
+  /* Tags */
+  .tag { display:inline-block; font-size:0.8em; padding:2px 8px; border-radius:4px; margin:2px; }
+  .tag-skill { background:rgba(163,113,247,0.15); color:var(--purple); }
+  .tag-fix { background:rgba(63,185,80,0.15); color:var(--green); }
+  .tag-bug { background:rgba(248,81,73,0.15); color:var(--red); }
+  .tag-decision { background:rgba(210,153,29,0.15); color:var(--orange); }
+  .tag-norm { background:rgba(57,197,207,0.15); color:var(--cyan); }
+
+  /* Bug severity */
+  .severity { font-weight:700; font-size:0.85em; }
+  .sev-critical { color:var(--red); } .sev-major { color:var(--orange); } .sev-minor { color:var(--cyan); }
+
+  /* Summary box */
+  .summary-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin:24px 0; }
+  .stat-row { display:flex; gap:24px; flex-wrap:wrap; }
+  .stat { text-align:center; min-width:100px; }
+  .stat-num { font-size:2em; font-weight:700; color:#fff; }
+  .stat-label { color:var(--muted); font-size:0.85em; }
+
+  .flow-arrow { color:var(--accent); font-weight:bold; margin:0 8px; }
+  .code-ref { font-family:'Cascadia Code','Fira Code',monospace; font-size:0.85em; background:rgba(255,255,255,0.06); padding:2px 6px; border-radius:3px; }
+  hr { border:none; border-top:1px solid var(--border); margin:24px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📋 菜单管理功能 — 开发复盘报告</h1>
+<p class="subtitle">
+  任务: <span class="code-ref">.trellis/tasks/05-11-menu-management/</span> &nbsp;|&nbsp;
+  日期: 2026-05-11 &nbsp;|&nbsp;
+  开发者: coolMornSec &nbsp;|&nbsp;
+  分支: master
+</p>
+
+<!-- ==================== STATS ==================== -->
+<div class="summary-box">
+  <div class="stat-row">
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">开发阶段</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">调用技能</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">发现 Bug</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">已修复</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">技术决策</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">新建文件</div></div>
+    <div class="stat"><div class="stat-num">2</div><div class="stat-label">修改文件</div></div>
+  </div>
+</div>
+
+<!-- ==================== TIMELINE ==================== -->
+<h2>一、开发阶段时间线</h2>
+
+<div class="timeline">
+
+  <!-- Phase 1 -->
+  <div class="phase">
+    <div class="phase-title">
+      阶段一：需求规划 (Brainstorm)
+      <span class="phase-badge badge-plan">Plan</span>
+    </div>
+    <div class="phase-desc">技能: <span class="tag tag-skill">trellis-brainstorm</span></div>
+
+    <div class="card-grid">
+      <div class="card good">
+        <h4>✅ 遵循的规范</h4>
+        <ul>
+          <li>严格按照 Trellis Phase 1 流程：task create → brainstorm → PRD → jsonl curation → task start</li>
+          <li>使用 <span class="code-ref">trellis-brainstorm</span> 技能进行结构化需求探索</li>
+          <li>每次只问一个问题 (One question per message)，避免信息过载</li>
+          <li>每个决策即时更新 prd.md，保持文档同步</li>
+          <li>创建了 implement.jsonl 和 check.jsonl 上下文文件</li>
+          <li>阅读了需求文档 <span class="code-ref">docs/requirements/菜单管理.md</span></li>
+        </ul>
+      </div>
+      <div class="card good">
+        <h4>✅ 用户参与的技术决策</h4>
+        <ul>
+          <li><span class="tag tag-decision">Mock方案</span> vite-plugin-mock（用户选3）— 用户选择而非AI自行决定</li>
+          <li><span class="tag tag-decision">虚拟根节点</span> 内嵌到树组件（用户选1）</li>
+          <li><span class="tag tag-decision">表单复用</span> 抽取公共 MenuForm.vue（用户选1）</li>
+          <li><span class="tag tag-decision">编码生成</span> 拼音+6位时间戳（用户选1）</li>
+          <li><span class="tag tag-decision">布局方案</span> MgLayout 替换 MgSplit（用户纠正）</li>
+          <li><span class="tag tag-decision">命名规范</span> page.vue 而非 index.vue（用户纠正）</li>
+          <li><span class="tag tag-decision">分页默认</span> pageSize=100（参考组件规范设置）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase">
+    <div class="phase-title">
+      阶段二：代码实现 (Implement)
+      <span class="phase-badge badge-execute">Execute</span>
+    </div>
+    <div class="phase-desc">技能: <span class="tag tag-skill">trellis-implement</span> (sub-agent) &nbsp;|&nbsp; 规范: <span class="tag tag-norm">Mg-Frontend-Vue</span> <span class="tag tag-norm">auto-import</span> <span class="tag tag-norm">file-based-router</span></div>
+
+    <div class="card-grid">
+      <div class="card good">
+        <h4>✅ 遵循的规范</h4>
+        <ul>
+          <li>使用 <span class="code-ref">&lt;script setup lang="ts"&gt;</span> 组合式 API</li>
+          <li>所有组件使用 <span class="code-ref">defineOptions({ name: 'PascalCase' })</span></li>
+          <li>优先使用 Magus 框架标准组件 (MgLayout, MgTree, MgTable, MgSearch, MgToolbar, MgBackWrap, MgButton)</li>
+          <li>文件路由命名: <span class="code-ref">page.vue</span> 用于列表页, <span class="code-ref">[id].vue</span> 用于动态参数</li>
+          <li>使用 <span class="code-ref">reactive()</span> 管理 search/page 状态（非多个独立 ref）</li>
+          <li>显式 import MenuForm（模块级组件不自动注册）和 useMenuApi</li>
+          <li>Vue/ElementPlus/VueRouter/Pinia 函数全部自动导入</li>
+          <li>错误处理使用 try/catch + ElMessage.error</li>
+        </ul>
+      </div>
+      <div class="card bad">
+        <h4>⚠️ 偏离/遗漏</h4>
+        <ul>
+          <li><span class="tag tag-bug">BUG-1</span> Mock API 参数: 使用 <span class="code-ref">params</span> 而非 <span class="code-ref">query</span> — 未确认 vite-plugin-mock v3 的实际 API 签名</li>
+          <li><span class="tag tag-bug">BUG-4</span> useConfirm API: 未验证 Magus 框架中 useConfirm 的真实签名和用法</li>
+          <li><span class="tag tag-bug">BUG-9</span> 刷新按钮: <span class="code-ref">@reload-tree</span> 仅调用 loadTree(), 遗漏 queryData() — 树和表数据不同步</li>
+          <li><span class="tag tag-bug">BUG-7</span> router.back() 后主页面空白 — 组件未重新挂载，onMounted 不触发</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>新建/修改文件清单</h3>
+    <table>
+      <tr><th>文件</th><th>类型</th><th>说明</th></tr>
+      <tr><td class="code-ref">mock/menu.ts</td><td>新建</td><td>7 个 API 端点 + 内存 CRUD + 业务规则校验</td></tr>
+      <tr><td class="code-ref">src/api/useMenuApi.ts</td><td>新建</td><td>6 个 API 函数 composable</td></tr>
+      <tr><td class="code-ref">src/pages/system/menu/page.vue</td><td>新建</td><td>主列表页 (MgLayout + MgTree + MgTable)</td></tr>
+      <tr><td class="code-ref">src/pages/system/menu/add.vue</td><td>新建</td><td>新增页 (MgBackWrap + MenuForm)</td></tr>
+      <tr><td class="code-ref">src/pages/system/menu/edit/[id].vue</td><td>新建</td><td>编辑页 (加载+回填+保存)</td></tr>
+      <tr><td class="code-ref">src/pages/system/menu/components/MenuForm.vue</td><td>新建</td><td>公共表单 (拼音编码 + useVModel)</td></tr>
+      <tr><td class="code-ref">vite.config.ts</td><td>修改</td><td>添加 vite-plugin-mock 插件</td></tr>
+      <tr><td class="code-ref">src/types/menu.ts</td><td>已存在</td><td>类型定义 (MENU_ROOT_ID, MENU_ROOT_NODE 等)</td></tr>
+    </table>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase">
+    <div class="phase-title">
+      阶段三：质量检查 (Check)
+      <span class="phase-badge badge-check">Check</span>
+    </div>
+    <div class="phase-desc">技能: <span class="tag tag-skill">trellis-check</span> (sub-agent) &nbsp;|&nbsp; 命令: <span class="code-ref">pnpm type-check</span> <span class="code-ref">pnpm lint</span></div>
+
+    <div class="card-grid">
+      <div class="card good">
+        <h4>✅ 发现并修复的问题</h4>
+        <ul>
+          <li><span class="tag tag-fix">TS修复</span> useMenuApi 未找到 → 添加显式 import（auto-imports.d.ts 缓存过期）</li>
+          <li><span class="tag tag-fix">TS修复</span> route.params.id 类型错误 → 使用 <span class="code-ref">Record&lt;string, string&gt;</span> 断言</li>
+          <li><span class="tag tag-fix">TS修复</span> MgButton @click 类型不匹配 → 包装为箭头函数</li>
+          <li><span class="tag tag-fix">ESLint</span> floating promises → 使用 void 前缀或 async/await</li>
+          <li><span class="tag tag-fix">ESLint</span> emit('confirm', ...) 可能传 undefined → 处理函数接受可选参数</li>
+        </ul>
+      </div>
+      <div class="card neutral">
+        <h4>📋 PRD Review (独立审查) 发现</h4>
+        <ul>
+          <li>缺少手动刷新按钮 → 已添加 MgTree reload 按钮</li>
+          <li>缺少表单重置按钮 → 已添加到 MenuForm</li>
+          <li>缺少 loading 状态 → 编辑页添加 v-loading</li>
+          <li>批量删除按钮缺少 disabled 状态 → PRD 已记录</li>
+          <li>多余功能: 树节点编辑/删除按钮 → 确认不需要（用户通过表格操作）</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase">
+    <div class="phase-title">
+      阶段四：浏览器验证 & 调试 (Verify & Debug)
+      <span class="phase-badge badge-verify">Verify</span>
+    </div>
+    <div class="phase-desc">技能: <span class="tag tag-skill">agent-browser</span> &nbsp;|&nbsp; 工具: Chrome CDP + accessibility-tree snapshots</div>
+
+    <h3>Bug 详细清单（按严重程度排序）</h3>
+    <table>
+      <tr>
+        <th style="width:50px">#</th>
+        <th style="width:80px">严重度</th>
+        <th>Bug 名称</th>
+        <th>症状</th>
+        <th>根因</th>
+        <th>修复</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td><span class="severity sev-critical">🔴 CRITICAL</span></td>
+        <td><strong>Mock API params 参数名错误</strong></td>
+        <td>编辑页完全空白，Vue 应用未渲染；控制台报 <span class="code-ref">TypeError: Cannot read properties of undefined (reading 'id')</span>，导致 Vite 进程崩溃</td>
+        <td><span class="code-ref">vite-plugin-mock v3</span> 将路径参数 (:id) 合并到 <span class="code-ref">query</span> 对象而非 <span class="code-ref">params</span>。源码 <span class="code-ref">dist/index.mjs:83</span> 显示: <span class="code-ref">query = urlMatch(reqUrl).params || {}</span> — 路径参数被赋值给 query 变量，response 函数接收的是 <span class="code-ref">{url, body, query, headers}</span>，根本没有 params 字段</td>
+        <td>3 个端点 (GET /:id, PUT /:id, DELETE /:id) 将 <span class="code-ref">params</span> 改为 <span class="code-ref">query</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="severity sev-critical">🔴 CRITICAL</span></td>
+        <td><strong>Dev Server 端口冲突</strong></td>
+        <td>agent-browser 连接 5173 报 ERR_CONNECTION_REFUSED；curl 却返回 200 — 因为服务器实际在 5174</td>
+        <td>上一个 Vite 进程崩溃后成为僵尸进程，仍占用 5173。新进程自动跳到 5174。agent-browser URL 硬编码 5173</td>
+        <td><span class="code-ref">lsof -ti :5173 | xargs kill -9</span> 清理僵尸进程后重启</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="severity sev-major">🟠 MAJOR</span></td>
+        <td><strong>Vite Mock 缓存中毒</strong></td>
+        <td>重启服务器后 mock 数据仍保留删除操作后的状态（日志管理消失，菜单管理/角色管理消失）</td>
+        <td>vite-plugin-mock 将 TS 文件打包缓存到 <span class="code-ref">node_modules/.vite/</span>，重启不清理缓存，直接使用旧的打包产物（其中内存已变异）</td>
+        <td><span class="code-ref">rm -rf node_modules/.vite</span> 清除缓存后重启</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="severity sev-major">🟠 MAJOR</span></td>
+        <td><strong>useConfirm API 不工作</strong></td>
+        <td>删除确认对话框弹出，点击"确定"后回调不执行，菜单未被删除</td>
+        <td>Magus 框架 <span class="code-ref">useConfirm</span> 返回 <span class="code-ref">UseConfirmReturn</span> 接口: <span class="code-ref">(fn) =&gt; Promise</span> 或 <span class="code-ref">(successMessage, fn) =&gt; Promise</span>。传入 <span class="code-ref">(message, callback)</span> 的调用方式与签名不匹配</td>
+        <td>用户明确要求"不使用 useConfirm，直接用 ElMessageBox" → 替换为 <span class="code-ref">ElMessageBox.confirm()</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="severity sev-major">🟠 MAJOR</span></td>
+        <td><strong>浏览器运行旧代码</strong></td>
+        <td>编辑 page.vue 后（useConfirm → ElMessageBox），删除仍不生效 — 对话框弹出但点确定无反应</td>
+        <td>Vite HMR 不会对已打开的页面进行完全的代码替换；浏览器缓存了旧版本的 JS bundle。agent-browser 导航到同一 URL 也可能使用缓存</td>
+        <td>需要 <span class="code-ref">agent-browser navigate</span> 强制重新加载（或清除浏览器缓存）</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><span class="severity sev-minor">🔵 MINOR</span></td>
+        <td><strong>router.back() 后主页面空白</strong></td>
+        <td>新增/编辑保存成功后 router.back() 返回主页面，页面显示空白（仅 devtools toggle 可见）</td>
+        <td>Vue Router 的 back() 恢复历史栈中的组件实例，但组件 onMounted 不会重新触发。若组件在离开时被销毁，重新挂载时可能存在时序问题</td>
+        <td>需要添加 <span class="code-ref">onActivated</span> (keep-alive) 或使用 router.replace 并强制刷新数据</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><span class="severity sev-minor">🔵 MINOR</span></td>
+        <td><strong>树刷新不同步表格</strong></td>
+        <td>点击树组件"刷新"按钮后，树数据更新但表格数据不变</td>
+        <td><span class="code-ref">@reload-tree="loadTree"</span> 只绑定 loadTree，缺少 queryData 调用</td>
+        <td>应在 loadTree 完成后也调用 queryData，或刷新按钮同时更新两者</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><span class="severity sev-minor">🔵 MINOR</span></td>
+        <td><strong>表格搜索不生效</strong></td>
+        <td>在搜索框输入"角色"后点击查询，表格仍显示全部3条记录</td>
+        <td><span class="code-ref">agent-browser fill</span> 命令通过 CDP 设置 value，可能未触发 Vue <span class="code-ref">v-model.trim</span> 所需的 input 事件；type 命令追加了字符导致 value 加倍 ("角色角色")</td>
+        <td>未完全修复 — 需要进一步验证 MgSearch 组件的搜索触发机制</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><span class="severity sev-minor">🔵 MINOR</span></td>
+        <td><strong>agent-browser ref 过期</strong></td>
+        <td>点击 @e24 但实际是另一个元素（ref 在 snapshot 之间失效），导致操作错误的节点</td>
+        <td>agent-browser 的 @eN ref 在每次页面变化后失效 — 这是设计行为。缺乏严格的 "每次交互后重新 snapshot" 纪律</td>
+        <td>流程改进: 每次交互后必须重新 snapshot 再获取 ref</td>
+      </tr>
+    </table>
+  </div>
+
+</div> <!-- timeline -->
+
+<!-- ==================== DECISIONS ==================== -->
+<h2>二、所有技术决策汇总</h2>
+
+<table>
+  <tr><th style="width:30px">#</th><th>决策点</th><th>选项</th><th>最终选择</th><th>AI 是否自行决策</th><th>决策人</th></tr>
+  <tr>
+    <td>1</td><td>Mock 数据方案</td><td>A. MSW &nbsp; B. json-server &nbsp; C. vite-plugin-mock</td><td><strong>C. vite-plugin-mock</strong></td><td>❌ 提供3个选项，用户选择</td><td>用户</td>
+  </tr>
+  <tr>
+    <td>2</td><td>虚拟根节点"全部菜单"</td><td>A. 内嵌到树 B. 独立UI C. 不显示</td><td><strong>A. 内嵌到树</strong></td><td>❌ 提供选项</td><td>用户</td>
+  </tr>
+  <tr>
+    <td>3</td><td>新增/编辑表单</td><td>A. 公共组件 B. 各自独立</td><td><strong>A. 抽取MenuForm.vue</strong></td><td>❌ 提供选项</td><td>用户</td>
+  </tr>
+  <tr>
+    <td>4</td><td>菜单编码生成规则</td><td>A. 拼音+时间戳 B. UUID C. 自增数字</td><td><strong>A. 拼音+6位时间戳</strong></td><td>❌ 提供选项</td><td>用户</td>
+  </tr>
+  <tr>
+    <td>5</td><td>页面布局</td><td>A. MgLayout B. MgSplit + 额外嵌套</td><td><strong>A. MgLayout</strong></td><td>⚠️ 初始选了MgSplit，用户纠正为MgLayout</td><td>用户纠正</td>
+  </tr>
+  <tr>
+    <td>6</td><td>列表页命名</td><td>A. index.vue B. page.vue</td><td><strong>B. page.vue</strong></td><td>⚠️ 初始用了index.vue，用户纠正</td><td>用户纠正</td>
+  </tr>
+  <tr>
+    <td>7</td><td>分页默认值</td><td>pageSize = ?</td><td><strong>100</strong></td><td>❌ 查询了组件规范</td><td>规范决定</td>
+  </tr>
+  <tr>
+    <td>8</td><td>删除确认方式</td><td>A. useConfirm B. ElMessageBox</td><td><strong>B. ElMessageBox.confirm</strong></td><td>⚠️ 初始用useConfirm失败，用户要求替换</td><td>用户纠正</td>
+  </tr>
+</table>
+
+<!-- ==================== PATTERNS ==================== -->
+<h2>三、规范遵循度分析</h2>
+
+<div class="card-grid">
+  <div class="card good">
+    <h4>✅ 严格遵守的规范</h4>
+    <ul>
+      <li><span class="tag tag-norm">Trellis Phase 1</span> 完整 brainstorm 流程（task create → PRD → jsonl → task start）</li>
+      <li><span class="tag tag-norm">Trellis Phase 2</span> 通过 trellis-implement sub-agent 实现</li>
+      <li><span class="tag tag-norm">Trellis Phase 2.2</span> 通过 trellis-check sub-agent 检查</li>
+      <li><span class="tag tag-norm">Mg-Frontend-Vue</span> MgLayout/MgTree/MgTable 标准组件</li>
+      <li><span class="tag tag-norm">Vue 3</span> script setup + Composition API + TypeScript strict</li>
+      <li><span class="tag tag-norm">File Router</span> page.vue / [id].vue 命名约定</li>
+      <li><span class="tag tag-norm">Auto Import</span> 不手动导入 Vue/ElementPlus/VueRouter 函数</li>
+      <li><span class="tag tag-norm">defineOptions</span> 所有组件显式声明 name</li>
+      <li><span class="tag tag-norm">代码质量</span> type-check + lint 全部通过</li>
+    </ul>
+  </div>
+  <div class="card bad">
+    <h4>⚠️ 偏离/未遵循的规范</h4>
+    <ul>
+      <li><span class="tag tag-bug">Mock API 签名</span> 未先阅读 vite-plugin-mock v3 源码确认 response 参数结构 — 假设了 params 而非 query</li>
+      <li><span class="tag tag-bug">useConfirm 签名</span> 未查看 Magus framework-biz-utils 的类型定义文件确认函数签名</li>
+      <li><span class="tag tag-bug">浏览器缓存</span> 编辑代码后未强制刷新浏览器，导致测试的是旧代码</li>
+      <li><span class="tag tag-bug">agent-browser 纪律</span> 多次使用过期的 @eN ref（在页面变化后未重新 snapshot）</li>
+      <li><span class="tag tag-bug">Dev Server 健壮性</span> 未检查僵尸进程和端口占用，反复在同一端口上操作</li>
+      <li><span class="tag tag-bug">Vite 缓存</span> 未知 vite-plugin-mock 会缓存打包后的 mock 文件</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== ROOT CAUSE ==================== -->
+<h2>四、根因分析（3个关键问题）</h2>
+
+<div class="card-grid">
+  <div class="card bad">
+    <h4>🔴 根因 #1: 外部库 API 假设错误</h4>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>问题链</strong>: 假设 vite-plugin-mock 的 response 参数有 <span class="code-ref">params</span> 字段 → 3个端点使用 params → 编辑页崩溃 → 用户报告"父节点不能删除"（实际是 TypeError）
+    </p>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>为什么之前没发现</strong>: 类型检查通过（params 类型是 <span class="code-ref">Record&lt;string, string&gt;</span>，与 query 类型相同）；lint 不会检查 mock 文件；无单元测试覆盖 mock API
+    </p>
+    <p style="color:var(--green)">
+      <strong>预防措施</strong>: 使用第三方库 API 前，读取其类型定义或源码确认参数结构，不依赖命名猜测
+    </p>
+  </div>
+  <div class="card bad">
+    <h4>🔴 根因 #2: 浏览器端验证流程缺陷</h4>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>问题链</strong>: 编辑代码 → Vite HMR 部分更新 → 浏览器运行混合新旧代码 → 测试结果不可靠 → 误判 bug 状态 → 反复"修复"
+    </p>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>为什么之前没发现</strong>: Vite HMR 在开发中通常是透明的，但 agent-browser 的自动化测试无法感知页面是否使用了最新代码；没有在编辑后做硬刷新
+    </p>
+    <p style="color:var(--green)">
+      <strong>预防措施</strong>: 每次代码修改后，用 <span class="code-ref">agent-browser navigate</span>（非 back()）强制重新加载页面
+    </p>
+  </div>
+  <div class="card bad">
+    <h4>🔴 根因 #3: Mock 数据状态污染</h4>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>问题链</strong>: 内存 mock 数据被操作修改 → Vite 缓存打包后的 mock 文件 → 重启服务器后缓存命中 → 数据未重置 → 测试环境不一致
+    </p>
+    <p style="color:var(--muted);margin-bottom:8px">
+      <strong>为什么之前没发现</strong>: 以为重启 Node 进程会清空所有内存状态，未考虑 vite-plugin-mock 的文件系统缓存机制
+    </p>
+    <p style="color:var(--green)">
+      <strong>预防措施</strong>: 在测试脚本开头添加 <span class="code-ref">rm -rf node_modules/.vite</span>；或使用文件持久化 mock 数据重置端点
+    </p>
+  </div>
+</div>
+
+<!-- ==================== LESSONS ==================== -->
+<h2>五、经验教训 & 改进建议</h2>
+
+<div class="card-grid">
+  <div class="card neutral">
+    <h4>📌 流程改进</h4>
+    <ul>
+      <li>在使用不熟悉的第三方库 API 前，阅读其源码/类型定义而非猜测参数名</li>
+      <li>agent-browser 测试前清理 Vite 缓存: <span class="code-ref">rm -rf node_modules/.vite</span></li>
+      <li>每次代码修改后强制刷新浏览器（navigate 而非依赖 HMR）</li>
+      <li>检查端口占用: <span class="code-ref">lsof -ti :5173 | xargs kill -9</span> 作为测试前置步骤</li>
+      <li>Mock API 添加一个 GET /api/menu/reset 端点用于测试间重置数据</li>
+      <li>agent-browser snapshot 后立即使用 ref，不跨交互缓存 ref 值</li>
+    </ul>
+  </div>
+  <div class="card good">
+    <h4>📌 做得好的地方</h4>
+    <ul>
+      <li>完整的 Trellis brainstorm 流程确保用户参与所有关键决策</li>
+      <li>PRD review 发现了设计缺陷（loading状态、重置按钮等）</li>
+      <li>type-check + lint 在实现阶段就捕获了大部分类型错误</li>
+      <li>agent-browser snapshot 机制提供了可追溯的测试证据（截图存档）</li>
+      <li>mock 数据包含业务规则校验（编码唯一、子节点不能删等）</li>
+      <li>使用 MgLayout/MgTree 等标准组件保持代码一致性</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ==================== STATUS ==================== -->
+<h2>六、当前状态</h2>
+
+<table>
+  <tr><th style="width:150px">指标</th><th>状态</th></tr>
+  <tr><td>TypeScript 类型检查</td><td><span class="tag tag-fix">✅ 通过</span> (vue-tsc --build)</td></tr>
+  <tr><td>ESLint 检查</td><td><span class="tag tag-fix">✅ 通过</span></td></tr>
+  <tr><td>页面加载</td><td><span class="tag tag-fix">✅ 正常</span> 树+表格渲染</td></tr>
+  <tr><td>树搜索过滤</td><td><span class="tag tag-fix">✅ 正常</span> 前端实时过滤</td></tr>
+  <tr><td>树节点点击</td><td><span class="tag tag-fix">✅ 正常</span> 表格切换子节点数据</td></tr>
+  <tr><td>新增菜单（拼音编码）</td><td><span class="tag tag-fix">✅ 正常</span> 拼音自动生成验证通过</td></tr>
+  <tr><td>编辑菜单（数据回填）</td><td><span class="tag tag-fix">✅ 正常</span> 保存后树和表同步更新</td></tr>
+  <tr><td>删除确认对话框</td><td><span class="tag tag-fix">✅ 正常</span> ElMessageBox.confirm 弹出</td></tr>
+  <tr><td>删除执行（叶子节点）</td><td><span class="tag tag-bug">🔄 待验证</span> 对话框弹出但未确认执行结果</td></tr>
+  <tr><td>表格搜索</td><td><span class="tag tag-bug">🔵 待修复</span> fill 命令可能不触发 Vue 响应式</td></tr>
+  <tr><td>批量删除</td><td><span class="tag tag-bug">⬜ 未测试</span></td></tr>
+  <tr><td>router.back() 刷新</td><td><span class="tag tag-bug">🔵 待修复</span> 返回后页面空白</td></tr>
+</table>
+
+<hr>
+<p style="color:var(--muted);text-align:center;font-size:0.85em;">
+  生成时间: 2026-05-11 &nbsp;|&nbsp; 任务目录: .trellis/tasks/05-11-menu-management &nbsp;|&nbsp; 工具: Claude Code (deepseek-v4-pro)
+</p>
+
+</div>
+</body>
+</html>

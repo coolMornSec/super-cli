@@ -499,6 +499,7 @@
     "useToken": "readonly",
     "useTransition": "readonly",
     "useUrlSearchParams": "readonly",
+    "useUserApi": "readonly",
     "useUserMedia": "readonly",
     "useVModel": "readonly",
     "useVModels": "readonly",

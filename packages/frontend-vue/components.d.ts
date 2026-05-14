@@ -26,6 +26,7 @@ declare module 'vue' {
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTableColumn: typeof import('element-plus/es')['ElTableColumn']
+    ElTag: typeof import('element-plus/es')['ElTag']
     MgBackWrap: typeof import('@magustek/framework-biz-ui')['MgBackWrap']
     MgButton: typeof import('@magustek/framework-ui')['MgButton']
     MgLayout: typeof import('@magustek/framework-ui')['MgLayout']

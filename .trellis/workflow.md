@@ -139,6 +139,21 @@ python ./.trellis/scripts/get_context.py --mode phase --step <X.Y>  # detailed g
       .trellis/spec/cli/backend/workflow-state-contract.md
 -->
 
+### Anti-Pattern Guard / 反模式守卫
+
+Before planning, coding, reviewing, fixing, testing, or answering workflow-related questions, apply the anti-pattern guard.
+
+1. Do not guess Instead of View Skill
+2. Do not explain instead of executing.
+3. Do not read code instead of verifying behavior.
+4. Do not treat partial success as complete delivery.
+5. Do not use probability words as evidence.
+6. Do not rely on mock results when real validation is required.
+7. Do not expand context without decision value.
+8. Do not ignore user constraints or prior decisions.
+9. Do not finish without evidence, known gaps, and verification status.
+
+
 ## Phase Index
 
 ```
@@ -150,7 +165,8 @@ Phase 3: Finish  → distill lessons + wrap-up
 <!-- Per-turn breadcrumb: shown when there is no active task (before Phase 1) -->
 
 [workflow-state:no_task]
-No active task. **A Direct answer** — pure Q&A / explanation / lookup / chat; no file writes + one-line answer + repo reads ≤ 2 files → AI judges, no override needed.
+No active task. **Apply Anti-Pattern Guard**
+**A Direct answer** — pure Q&A / explanation / lookup / chat; no file writes + one-line answer + repo reads ≤ 2 files → AI judges, no override needed.
 **B Create a task** — any implementation / code change / build / refactor work. Entry sequence: (1) `python ./.trellis/scripts/task.py create "<title>"` to create the task (status=planning, breadcrumb switches to [workflow-state:planning] for brainstorm + jsonl phase guidance) → (2) load `trellis-brainstorm` skill to discuss requirements with the user and iterate on prd.md → (3) once prd is done and jsonl is curated, run `task.py start <task-dir>` to enter [workflow-state:in_progress] for the implementation skeleton. For research-heavy work, dispatch `trellis-research` sub-agents — main agent must NOT do 3+ inline WebFetch / WebSearch / `gh api` calls. **"It looks small" is NOT grounds for downgrading B to A or C**.
 **C Inline change** (per-turn only, escape hatch for B) — the user's CURRENT message MUST contain one of: "skip trellis" / "no task" / "just do it" / "don't create a task" / "跳过 trellis" / "别走流程" / "小修一下" / "直接改" / "先别建任务" → briefly acknowledge ("ok, skipping trellis flow this turn"), then inline. **Without seeing one of these phrases you must NOT inline on your own**; do not invent an override the user never said.
 [/workflow-state:no_task]
@@ -166,6 +182,7 @@ No active task. **A Direct answer** — pure Q&A / explanation / lookup / chat; 
 <!-- Per-turn breadcrumb: shown throughout Phase 1 (status='planning') -->
 
 [workflow-state:planning]
+**Apply Anti-Pattern Guard**
 Load the `trellis-brainstorm` skill and iterate on prd.md with the user.
 Phase 1.3 (required, once): before `task.py start`, you MUST curate `implement.jsonl` and `check.jsonl` — list the spec / research files sub-agents need so they get the right context injected. You may skip only if the jsonl already has agent-curated entries (the seed `_example` row alone doesn't count).
 Then run `task.py start <task-dir>` to flip status to in_progress.
@@ -179,6 +196,7 @@ Research output **must** land in `{task_dir}/research/*.md`, written by `trellis
      into a sub-agent. -->
 
 [workflow-state:planning-inline]
+**Apply Anti-Pattern Guard**
 Load the `trellis-brainstorm` skill and iterate on prd.md with the user.
 Phase 1.3 jsonl curation is **skipped** in inline dispatch mode — the main session loads `trellis-before-dev` directly in Phase 2 and reads spec context itself, so there is no sub-agent to inject jsonl into.
 Then run `task.py start <task-dir>` to flip status to in_progress.
@@ -197,6 +215,7 @@ Research output **must** land in `{task_dir}/research/*.md`. In inline mode the 
      commit, including Phase 3.3 spec update and Phase 3.4 commit. -->
 
 [workflow-state:in_progress]
+**Apply Anti-Pattern Guard**
 **Flow**: trellis-implement → trellis-check → trellis-update-spec → commit (Phase 3.4) → `/trellis:finish-work`.
 **Main-session default (no override)**: dispatch the `trellis-implement` / `trellis-check` sub-agents — the main agent does NOT edit code by default. Phase 3.4 commit (required, once): after trellis-update-spec, or whenever implementation is verifiably complete, the main agent **drives the commit** — state the commit plan in user-facing text, then run `git commit` — BEFORE suggesting `/trellis:finish-work`. `/finish-work` refuses to run on a dirty working tree (paths outside `.trellis/workspace/` and `.trellis/tasks/`).
 **Sub-agent self-exemption**: if you are already running as `trellis-implement`, implement directly from the loaded task context and do NOT spawn another `trellis-implement`; if you are already running as `trellis-check`, review/fix directly and do NOT spawn another `trellis-check`. The default dispatch rule applies to the main session only.
@@ -210,6 +229,7 @@ Research output **must** land in `{task_dir}/research/*.md`. In inline mode the 
      instead of dispatching sub-agents. -->
 
 [workflow-state:in_progress-inline]
+**Apply Anti-Pattern Guard**
 **Flow** (inline mode): main session loads `trellis-before-dev` → main session edits code → main session loads `trellis-check` → run lint / type-check / tests → fix → `trellis-update-spec` → commit (Phase 3.4) → `/trellis:finish-work`.
 **Main-session default (inline dispatch_mode)**: the main agent edits code directly. Do NOT dispatch `trellis-implement` / `trellis-check` sub-agents. Load the `trellis-before-dev` skill before writing code; load the `trellis-check` skill before reporting completion.
 Phase 3.4 commit (required, once): after `trellis-update-spec`, or whenever implementation is verifiably complete, the main agent **drives the commit** — state the commit plan in user-facing text, then run `git commit` — BEFORE suggesting `/trellis:finish-work`. `/finish-work` refuses to run on a dirty working tree (paths outside `.trellis/workspace/` and `.trellis/tasks/`).
@@ -231,6 +251,7 @@ Phase 3.4 commit (required, once): after `trellis-update-spec`, or whenever impl
      channel as the live blocks. -->
 
 [workflow-state:completed]
+**Apply Anti-Pattern Guard**
 Code committed via Phase 3.4; run `/trellis:finish-work` to wrap up (archive the task + record session).
 If you reach this state with uncommitted code, return to Phase 3.4 first — `/finish-work` refuses to run on a dirty working tree.
 `task.py archive` deletes any runtime session files that still point at the archived task.
@@ -251,6 +272,7 @@ When a user request matches one of these intents, load the corresponding skill (
 
 | User intent | Route |
 |---|---|
+| Any circumstances about chat/design/develop/test/check | `magus-pattern-guard` |
 | Wants a new feature / requirement unclear | `trellis-brainstorm` |
 | About to write code / start implementing | Dispatch the `trellis-implement` sub-agent per Phase 2.1 |
 | Finished writing / want to verify | Dispatch the `trellis-check` sub-agent per Phase 2.2 |
@@ -336,7 +358,7 @@ The brainstorm skill will guide you to:
 - Ask one question at a time
 - Prefer researching over asking the user
 - Prefer offering options over open-ended questions
-- Update `prd.md` immediately after each user answer
+- Update `prd.md` immediately after clear requirements
 
 Return to this step whenever requirements change and revise `prd.md`.
 

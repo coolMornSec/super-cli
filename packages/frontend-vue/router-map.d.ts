@@ -55,6 +55,27 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
+    '/system/user/add': RouteRecordInfo<
+      '/system/user/add',
+      '/system/user/add',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/system/user/edit/[id]': RouteRecordInfo<
+      '/system/user/edit/[id]',
+      '/system/user/edit/:id',
+      { id: ParamValue<true> },
+      { id: ParamValue<false> },
+      | never
+    >,
+    '/system/user/page': RouteRecordInfo<
+      '/system/user/page',
+      '/system/user/page',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
   }
 
   /**
@@ -89,6 +110,24 @@ declare module 'vue-router/auto-routes' {
     'src/pages/system/menu/page.vue': {
       routes:
         | '/system/menu/page'
+      views:
+        | never
+    }
+    'src/pages/system/user/add.vue': {
+      routes:
+        | '/system/user/add'
+      views:
+        | never
+    }
+    'src/pages/system/user/edit/[id].vue': {
+      routes:
+        | '/system/user/edit/[id]'
+      views:
+        | never
+    }
+    'src/pages/system/user/page.vue': {
+      routes:
+        | '/system/user/page'
       views:
         | never
     }

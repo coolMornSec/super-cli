@@ -1,0 +1,11 @@
+{"file": ".trellis/tasks/05-11-menu-management/prd.md", "reason": "Task PRD with full requirements, decisions, file structure, and technical approach"}
+{"file": "docs/requirements/菜单管理.md", "reason": "Original menu management requirements document - source of truth for business rules and acceptance criteria"}
+{"file": ".trellis/spec/frontend/index.md", "reason": "Frontend development guidelines index - pre-development checklist and quality check entry point"}
+{"file": ".trellis/spec/guides/index.md", "reason": "Cross-package thinking guides - code reuse and cross-layer thinking triggers"}
+{"file": ".agents/skills/mg-framework-ui/references/components/mg-layout.md", "reason": "MgLayout component API reference - aside/main slots, asideWidth, gap props"}
+{"file": ".agents/skills/mg-framework-ui/references/components/mg-tree.md", "reason": "MgTree component API reference - props, events, slots, methods for tree rendering and interaction"}
+{"file": ".agents/skills/mg-framework-ui/references/components/mg-page-table.md", "reason": "MgPageTable component API reference - search/toolbar/table/pagination slots and events"}
+{"file": ".agents/skills/mg-framework-ui/references/components/mg-back-wrap.md", "reason": "MgBackWrap component API reference - title, showBack props, back event"}
+{"file": ".agents/skills/mg-framework-ui/SKILL.md", "reason": "Mg UI framework skill - replacement rules, component indices, core constraints"}
+{"file": "packages/frontend-vue/src/types/menu.ts", "reason": "Existing TypeScript type definitions: MenuItem, MenuTreeNode, MenuFormModel, MenuSearchForm, MENU_ROOT_ID, MENU_ROOT_NODE"}
+{"file": "CLAUDE.md", "reason": "Project-level instructions: tech stack, architecture patterns, commands, auto-imports, component auto-registration"}

@@ -1,9 +1,7 @@
 <template>
-  <div h-full>
-    <MgBackWrap @back="goBack">
-      <MenuForm @confirm="onConfirm" @cancel="goBack" />
-    </MgBackWrap>
-  </div>
+  <MgBackWrap title="新增菜单" @back="goBack">
+    <MenuForm @confirm="onConfirm" @cancel="goBack" />
+  </MgBackWrap>
 </template>
 
 <script setup lang="ts">
@@ -21,13 +19,15 @@ function goBack() {
   router.back()
 }
 
-async function onConfirm(data?: Partial<{
-  name: string
-  code: string
-  path: string
-  accessType: 'LOCAL' | 'REMOTE'
-  sort: number
-}>) {
+async function onConfirm(
+  data?: Partial<{
+    name: string
+    code: string
+    path: string
+    accessType: 'LOCAL' | 'REMOTE'
+    sort: number
+  }>,
+) {
   if (!data) return
   await createMenu({ ...data, parentId } as Parameters<typeof createMenu>[0])
   ElMessage.success('新增成功')
